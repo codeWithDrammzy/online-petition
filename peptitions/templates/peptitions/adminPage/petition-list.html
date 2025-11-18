@@ -1,0 +1,128 @@
+{% extends "peptitions/main.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<main class="flex-1 px-1 sm:px-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-semibold">All Petitions</h2>
+    <button id="openFormBtn"
+       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+       + New Petition
+    </button>
+  </div>
+
+  <!-- Desktop Table -->
+  <div class="hidden md:block bg-white shadow rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full border-collapse">
+        <thead class="bg-blue-100">
+          <tr>
+            <th class="p-3 text-left text-sm font-semibold text-gray-600">#</th>
+            <th class="p-3 text-left text-sm font-semibold text-gray-600">Title</th>
+            <th class="p-3 text-left text-sm font-semibold text-gray-600">Status</th>
+            <th class="p-3 text-left text-sm font-semibold text-gray-600">Created At</th>
+            <th class="p-3 text-left text-sm font-semibold text-gray-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for petition in petitions %}
+          <tr class="border-b">
+            <td class="p-3">{{ forloop.counter }}</td>
+            <td class="p-3">{{ petition.title }}</td>
+            <td class="p-3">
+              {% if petition.status == "pending" %}
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded">Pending</span>
+              {% elif petition.status == "approved" %}
+                <span class="bg-green-100 text-green-800 px-2 py-1 text-xs rounded">Approved</span>
+              {% else %}
+                <span class="bg-red-100 text-red-800 px-2 py-1 text-xs rounded">Rejected</span>
+              {% endif %}
+            </td>
+            <td class="p-3">{{ petition.created_at|date:"M d, Y" }}</td>
+            <td class="p-3 flex gap-2">
+              <a href="{% url 'petition-detail' petition.id %}" class="text-blue-600 hover:underline">View</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="p-3 text-center text-gray-500">No petitions yet</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="md:hidden space-y-4">
+    {% for petition in petitions %}
+    <div class="bg-white shadow rounded-lg p-4">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-semibold text-lg">{{ petition.title }}</h3>
+        <span class="text-xs text-gray-500">{{ petition.created_at|date:"M d, Y" }}</span>
+      </div>
+      <div class="mb-2">
+        {% if petition.status == "pending" %}
+          <span class="bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded">Pending</span>
+        {% elif petition.status == "approved" %}
+          <span class="bg-green-100 text-green-800 px-2 py-1 text-xs rounded">Approved</span>
+        {% else %}
+          <span class="bg-red-100 text-red-800 px-2 py-1 text-xs rounded">Rejected</span>
+        {% endif %}
+      </div>
+      <div>
+        <a href="{% url 'petition-detail' petition.id %}" class="text-blue-600 hover:underline">View</a>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-gray-500 text-center">No petitions yet</p>
+    {% endfor %}
+  </div>
+
+  <!-- Hidden Form (Modal) -->
+  <div id="petitionForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 rounded-lg shadow-lg">
+      
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold">Create New Petition</h3>
+        <button id="closeFormBtn" class="text-gray-500 hover:text-gray-700">&times;</button>
+      </div>
+
+      <!-- Form -->
+      <form method="post" action="">
+        {% csrf_token %}
+        {{ form|crispy }}
+        
+        <!-- Footer Buttons -->
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" id="cancelBtn" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<!-- JavaScript to toggle form -->
+<script>
+  const openBtn = document.getElementById("openFormBtn");
+  const closeBtn = document.getElementById("closeFormBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+  const formModal = document.getElementById("petitionForm");
+
+  openBtn.addEventListener("click", () => {
+    formModal.classList.remove("hidden");
+  });
+
+  closeBtn.addEventListener("click", () => {
+    formModal.classList.add("hidden");
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    formModal.classList.add("hidden");
+  });
+</script>
+{% endblock %}

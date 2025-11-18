@@ -1,0 +1,36 @@
+{% extends "peptitions/userPage/main.html" %}
+
+{% block content %}
+<main class="flex-1 p-6 md:ml-64 overflow-y-auto">
+  <h1 class="text-2xl font-bold mb-4">My Signed Petitions</h1>
+
+  {% if petitions %}
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for petition in petitions %}
+        <div class="bg-white border rounded-lg p-4 shadow flex flex-col justify-between">
+          <div>
+            {% if petition.image %}
+              <img src="{{ petition.image.url }}" 
+                   alt="{{ petition.title }}" 
+                   class="w-full h-40 object-cover rounded mb-3">
+            {% endif %}
+            <h2 class="font-semibold text-lg mb-2">{{ petition.title }}</h2>
+            <p class="text-sm text-gray-600 mb-3">
+              {{ petition.description|truncatechars:100 }}
+            </p>
+            <p class="text-xs text-gray-500 mb-1">
+              Status: <span class="font-medium">{{ petition.status|title }}</span>
+            </p>
+            <p class="text-xs text-gray-500">
+              Signatures: {{ petition.current_signatures }} / {{ petition.required_signatures }}
+            </p>
+          </div>
+         
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-500">You haven’t signed any petitions yet.</p>
+  {% endif %}
+</main>
+{% endblock %}

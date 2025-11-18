@@ -1,0 +1,100 @@
+{% extends "peptitions/main.html" %}
+
+{% block content %}
+<main class="flex-1 px-1 sm:px-6 max-w-full overflow-x-hidden">
+
+  <!-- Topbar -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Dashboard</h1>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 w-full">
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold">Total Petitions</h2>
+      <p class="text-3xl font-bold text-blue-600">{{ total_petitions }}</p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold">Pending Petitions</h2>
+      <p class="text-3xl font-bold text-yellow-500">{{ pending_petitions }}</p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold">Total Users</h2>
+      <p class="text-3xl font-bold text-green-600">{{ total_users }}</p>
+    </div>
+  </div>
+
+  <!-- Recent Petitions -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6 w-full">
+    <h2 class="text-xl font-semibold mb-4">Recent Petitions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+      {% for petition in recent_petitions %}
+      <div class="bg-gray-50 rounded-lg shadow p-4 flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-lg mb-2">{{ petition.title }}</h3>
+          <p class="text-gray-600 text-sm mb-4">{{ petition.description|truncatewords:15 }}</p>
+        </div>
+        <div class="flex justify-between items-center mt-auto">
+          <span class="text-xs px-2 py-1 rounded-full 
+            {% if petition.status == 'pending' %}
+              bg-yellow-200 text-yellow-800
+            {% elif petition.status == 'approved' %}
+              bg-green-200 text-green-800
+            {% else %}
+              bg-red-200 text-red-800
+            {% endif %}
+          ">
+            {{ petition.status|title }}
+          </span>
+          <a href="{% url 'petition-list' %}" class="text-blue-600 text-sm font-medium hover:underline">View</a>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-gray-500 col-span-3">No recent petitions.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="bg-white p-6 rounded-lg shadow mt-6 w-full">
+    <h3 class="text-xl font-semibold mb-4">Petitions by Status</h3>
+    <canvas id="petitionChart" height="120" class="w-full"></canvas>
+  </div>
+</main>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('petitionChart').getContext('2d');
+  const petitionChart = new Chart(ctx, {
+    type: 'bar', // Change to 'pie' or 'line' if you like
+    data: {
+      labels: {{ statuses|safe }},
+      datasets: [{
+        label: 'Number of Petitions',
+        data: {{ counts|safe }},
+        backgroundColor: [
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+        ],
+        borderColor: [
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 99, 132, 1)',
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+{% endblock %}

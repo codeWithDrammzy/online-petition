@@ -1,0 +1,197 @@
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import *
+from .models import *
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+
+# --------- Authentications / Home  -------
+def index(request):
+    return render(request, "peptitions/homePage/index.html")
+
+
+def register_view(request):
+    if request.method == "POST":
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # auto login after registration
+            return redirect("index")
+    else:
+        form = UserRegisterForm()
+    return render(request, "peptitions/homePage/register.html", {"form": form})
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+
+            # ✅ Redirect based on role
+            if user.is_staff or user.is_superuser:  
+                return redirect("dashboard")  # Django admin dashboard
+            else:
+                return redirect("board")  # Your custom user dashboard
+    else:
+        form = AuthenticationForm()
+
+    return render(request, "peptitions/homePage/login.html", {"form": form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("login")
+
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    # Prevent deleting superusers
+    if user.is_superuser:
+        messages.error(request, "You cannot delete an admin user.")
+        return redirect("user-list")
+
+    user.delete()
+    messages.success(request, "User deleted successfully.")
+    return redirect("user-list")
+
+# --- Dashboard View ---
+from django.db.models import Count
+
+@login_required
+def dashboard_view(request):
+    total_petitions = Petition.objects.count()
+    pending_petitions = Petition.objects.filter(status="pending").count()
+    total_users = User.objects.count()
+
+    recent_petitions = Petition.objects.order_by("-created_at")[:3]
+
+    # ✅ Chart data (group petitions by status)
+    petition_status_data = (
+        Petition.objects.values("status")
+        .annotate(count=Count("id"))
+    )
+
+    statuses = [item["status"].capitalize() for item in petition_status_data]
+    counts = [item["count"] for item in petition_status_data]
+
+    context = {
+        "total_petitions": total_petitions,
+        "pending_petitions": pending_petitions,
+        "total_users": total_users,
+        "recent_petitions": recent_petitions,
+        "statuses": statuses,
+        "counts": counts,
+    }
+    return render(request, "peptitions/adminPage/dashboard.html", context)
+
+
+@login_required
+def petition_list(request):
+    petitions = Petition.objects.all().order_by("-created_at")  # newest first
+
+    if request.method == "POST":
+        form = PetitionForm(request.POST, request.FILES)
+        if form.is_valid():
+            petition = form.save(commit=False)
+            petition.created_by = request.user  # assuming you have a FK to User
+            petition.save()
+            return redirect("petition_list")  # refresh list after creation
+    else:
+        form = PetitionForm()
+
+    return render(request, "peptitions/adminPage/petition-list.html", {
+        "petitions": petitions,
+        "form": form
+    })
+
+
+def petition_detail(request, pk):
+    petition = get_object_or_404(Petition, id=pk)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "approved":
+            petition.status = "approved"
+        elif action == "rejected":
+            petition.status = "rejected"
+        petition.save()
+        return redirect("petition-list")  # redirect to list page after action
+
+    context = {"petition": petition}
+    return render(request, "peptitions/adminPage/petition-detail.html", context)
+
+
+@login_required
+def user_list(request):
+    users = User.objects.all() 
+    return render(request, "peptitions/adminPage/user-list.html", {
+        "users": users,
+    })
+
+
+# --- User Dashboard View ---
+@login_required
+def board_view(request):
+    # Get IDs of petitions signed by the current user
+    signed_petitions = Signature.objects.filter(
+        user=request.user
+    ).values_list("petition_id", flat=True)
+
+    # Only approved petitions, excluding the ones already signed
+    petitions = Petition.objects.filter(
+        status="approved"
+    ).exclude(id__in=signed_petitions).order_by("-created_at")
+
+    return render(request, "peptitions/userPage/board.html", {
+        "petitions": petitions
+    })
+
+
+# --- User Views ---
+@login_required
+def user_petitions(request):
+    # ✅ Only show petitions that are approved/active
+    petitions = Petition.objects.filter(status="approved").order_by("-created_at")
+    return render(request, "peptitions/userPage/petition_list.html", {"petitions": petitions})
+
+
+@login_required
+def my_petitions(request):
+    petitions = Petition.objects.filter(created_by=request.user).order_by("-created_at")
+    
+    if request.method == "POST":
+        form = PetitionForm(request.POST, request.FILES)
+        if form.is_valid():
+            petition = form.save(commit=False)
+            petition.created_by = request.user
+            petition.status = "pending"  # ✅ always pending until admin approves
+            petition.save()
+            return redirect("my_petitions")
+    else:
+        form = PetitionForm()  # ✅ initialize the form for GET requests
+
+    return render(request, "peptitions/userPage/my_petitions.html", {
+        "petitions": petitions,
+        "form": form
+    })
+
+
+@login_required
+def sign_petition(request, petition_id):
+    petition = Petition.objects.get(id=petition_id, status="approved")  # ✅ only approved petitions can be signed
+    Signature.objects.get_or_create(user=request.user, petition=petition)
+    petition.current_signatures = petition.signatures.count()
+    petition.save()
+    return redirect("user_petitions")
+
+
+@login_required
+def signed_petitions(request):
+    signatures = Signature.objects.filter(user=request.user).select_related("petition").order_by('-signed_at')
+    petitions = [sig.petition for sig in signatures]  # extract petitions
+    return render(request, "peptitions/userPage/signed_petitions.html", {"petitions": petitions})

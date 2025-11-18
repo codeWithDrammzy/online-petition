@@ -1,0 +1,37 @@
+{% extends "peptitions/base.html" %}
+
+
+{%block content%}
+
+    <!-- Hero Section -->
+<section class="relative flex items-center justify-center py-20 bg-gradient-to-r from-blue-500 to-indigo-700 text-white">
+
+
+    <div class="absolute inset-0 bg-black bg-opacity-30"></div> <!-- overlay -->
+    <div class="relative z-10 text-center px-6">
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">Raise Your Voice, <br> Create Meaningful Change</h1>
+      <p class="text-lg md:text-xl mb-8 text-gray-100 max-w-2xl mx-auto">Join our platform to create, sign, and support petitions that matter to you and your community.</p>
+      <div class="space-x-4">
+        <a href="#" class="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-gray-100 transition">Get Started</a>
+        <a href="#" class="px-6 py-3 border border-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition">Login</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-3 gap-10">
+    <div class="bg-white p-8 rounded-xl shadow-lg text-center transform hover:-translate-y-2 hover:shadow-2xl transition">
+      <h3 class="text-2xl font-semibold mb-4 text-blue-600">📜 Create Petitions</h3>
+      <p class="text-gray-600">Draft and publish petitions on causes you care about, and invite others to support your vision.</p>
+    </div>
+    <div class="bg-white p-8 rounded-xl shadow-lg text-center transform hover:-translate-y-2 hover:shadow-2xl transition">
+      <h3 class="text-2xl font-semibold mb-4 text-blue-600">✍️ Sign Petitions</h3>
+      <p class="text-gray-600">Support petitions that align with your values by adding your signature and sharing them with others.</p>
+    </div>
+    <div class="bg-white p-8 rounded-xl shadow-lg text-center transform hover:-translate-y-2 hover:shadow-2xl transition">
+      <h3 class="text-2xl font-semibold mb-4 text-blue-600">📊 Track Progress</h3>
+      <p class="text-gray-600">Stay updated with live stats on how many people have signed and see how movements grow.</p>
+    </div>
+  </section>
+
+{% endblock %}

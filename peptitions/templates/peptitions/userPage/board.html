@@ -1,0 +1,63 @@
+{% extends "peptitions/userPage/main.html" %}
+
+{% block content %}
+<main class="flex-1 p-6 md:ml-64 overflow-y-auto">
+
+  <!-- Topbar -->
+  <div class="flex justify-between items-center mb-6">
+    <button id="menuBtn" class="md:hidden bg-gray-200 p-2 rounded-lg">☰</button>
+    <h1 class="text-2xl font-bold text-gray-800">Welcome, {{ request.user }} 👋</h1>
+    <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300">🔔</button>
+  </div>
+
+  <!-- Active Petitions -->
+  <div class="bg-white shadow rounded-lg p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-700">Available Petitions</h2>
+      <a href="{% url 'my_petitions' %}"
+         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">+New Petition</a>
+    </div>
+
+    {% if petitions %}
+      <!-- Grid with 3 columns on large screens -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for petition in petitions %}
+          <!-- Each petition card -->
+          <div class="bg-gray-50 border rounded-lg p-4 shadow hover:shadow-md transition flex flex-col justify-between">
+
+            <!-- Petition image -->
+            {% if petition.image %}
+              <img src="{{ petition.image.url }}" 
+                   alt="{{ petition.title }}" 
+                   class="w-full h-40 object-cover rounded mb-3">
+            {% endif %}
+
+            <div>
+              <span class="font-semibold block mb-1">📢 {{ petition.title }}</span>
+              <p class="text-gray-600 text-sm mb-2">{{ petition.description|truncatechars:100 }}</p>
+              <p class="text-xs text-gray-500 mb-4">{{ petition.current_signatures }} signed</p>
+            </div>
+
+            <!-- Buttons at the bottom -->
+            <div class="flex justify-between items-center mt-auto">
+              <a href="{% url 'sign_petition' petition.id %}"
+                 class="text-blue-600 hover:underline">View</a>
+
+              <form method="post" action="{% url 'sign_petition' petition.id %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                  Sign
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">No petitions available yet.</p>
+    {% endif %}
+  </div>
+
+</main>
+{% endblock %}
