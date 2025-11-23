@@ -1,36 +1,230 @@
 {% extends "peptitions/userPage/main.html" %}
 
 {% block content %}
-<main class="flex-1 p-6 md:ml-64 overflow-y-auto">
-  <h1 class="text-2xl font-bold mb-4">My Signed Petitions</h1>
+<main class="flex-1 p-4 md:p-6 overflow-y-auto">
 
+  <!-- Header Section -->
+  <div class="mb-6 md:mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+      <div class="mb-4 lg:mb-0">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">My Signed Petitions</h1>
+        <p class="text-gray-600 text-sm md:text-base">Track the petitions you've supported and their progress</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="text-sm text-gray-600 bg-blue-50 px-3 py-1.5 rounded-lg">
+          <i class="fas fa-signature mr-1 text-blue-600"></i>
+          {{ petitions.count }} signed petition{{ petitions.count|pluralize }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xl md:text-2xl font-bold mb-1">{{ total_signed|default:"0" }}</p>
+          <p class="text-blue-100 text-xs md:text-sm font-medium">Total Signed</p>
+        </div>
+        <i class="fas fa-signature text-lg md:text-2xl text-blue-200"></i>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xl md:text-2xl font-bold mb-1">{{ active_petitions|default:"0" }}</p>
+          <p class="text-green-100 text-xs md:text-sm font-medium">Active</p>
+        </div>
+        <i class="fas fa-play-circle text-lg md:text-2xl text-green-200"></i>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xl md:text-2xl font-bold mb-1">{{ successful_petitions|default:"0" }}</p>
+          <p class="text-purple-100 text-xs md:text-sm font-medium">Successful</p>
+        </div>
+        <i class="fas fa-trophy text-lg md:text-2xl text-purple-200"></i>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xl md:text-2xl font-bold mb-1">{{ recent_signatures|default:"0" }}</p>
+          <p class="text-orange-100 text-xs md:text-sm font-medium">This Month</p>
+        </div>
+        <i class="fas fa-calendar-alt text-lg md:text-2xl text-orange-200"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Petitions Grid -->
   {% if petitions %}
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {% for petition in petitions %}
-        <div class="bg-white border rounded-lg p-4 shadow flex flex-col justify-between">
-          <div>
-            {% if petition.image %}
-              <img src="{{ petition.image.url }}" 
-                   alt="{{ petition.title }}" 
-                   class="w-full h-40 object-cover rounded mb-3">
-            {% endif %}
-            <h2 class="font-semibold text-lg mb-2">{{ petition.title }}</h2>
-            <p class="text-sm text-gray-600 mb-3">
-              {{ petition.description|truncatechars:100 }}
-            </p>
-            <p class="text-xs text-gray-500 mb-1">
-              Status: <span class="font-medium">{{ petition.status|title }}</span>
-            </p>
-            <p class="text-xs text-gray-500">
-              Signatures: {{ petition.current_signatures }} / {{ petition.required_signatures }}
-            </p>
+        <!-- Petition Card -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+          
+          <!-- Petition Image -->
+          {% if petition.image %}
+          <div class="h-48 overflow-hidden">
+            <img src="{{ petition.image.url }}" 
+                 alt="{{ petition.title }}" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
           </div>
-         
+          {% else %}
+          <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <i class="fas fa-scroll text-gray-400 text-4xl"></i>
+          </div>
+          {% endif %}
+
+          <!-- Card Content -->
+          <div class="p-5">
+            <!-- Status and Category -->
+            <div class="flex justify-between items-center mb-3">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                {% if petition.status == 'pending' %} 
+                  bg-yellow-100 text-yellow-800
+                {% elif petition.status == 'approved' %} 
+                  bg-green-100 text-green-800
+                {% elif petition.status == 'rejected' %} 
+                  bg-red-100 text-red-800
+                {% else %} 
+                  bg-gray-100 text-gray-800
+                {% endif %}">
+                <i class="fas fa-circle text-xs mr-1 
+                  {% if petition.status == 'pending' %}text-yellow-500
+                  {% elif petition.status == 'approved' %}text-green-500
+                  {% elif petition.status == 'rejected' %}text-red-500
+                  {% else %}text-gray-500{% endif %}">
+                </i>
+                {{ petition.status|title }}
+              </span>
+              <span class="text-xs text-gray-500 flex items-center">
+                <i class="far fa-clock mr-1"></i>
+                {{ petition.created_at|timesince }} ago
+              </span>
+            </div>
+
+            <!-- Title and Description -->
+            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+              {{ petition.title }}
+            </h3>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+              {{ petition.description }}
+            </p>
+
+            <!-- Progress Section -->
+            <div class="mb-4">
+              <div class="flex justify-between text-xs text-gray-600 mb-1">
+                <span class="flex items-center">
+                  <i class="fas fa-users mr-1 text-blue-500"></i>
+                  {{ petition.current_signatures }} supporters
+                </span>
+                <span class="font-medium">
+                  {{ petition.target_signatures }} goal
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-green-600 h-2 rounded-full transition-all duration-500" 
+                     style="width: {% widthratio petition.current_signatures petition.target_signatures 100 %}%">
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="flex justify-between items-center text-xs text-gray-500 mb-4">
+              <span class="flex items-center">
+                <i class="fas fa-user-edit mr-1"></i>
+                By {{ petition.created_by.username }}
+              </span>
+              {% if petition.deadline %}
+              <span class="flex items-center">
+                <i class="fas fa-calendar mr-1"></i>
+                {{ petition.days_left }} days left
+              </span>
+              {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center">
+              <a href="" 
+                 class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center space-x-1 transition-colors duration-200">
+                <i class="fas fa-eye"></i>
+                <span>View Details</span>
+              </a>
+              
+              <div class="flex items-center space-x-2">
+                <button class="text-green-600 hover:text-green-700 transition-colors duration-200">
+                  <i class="fas fa-share-alt text-sm"></i>
+                </button>
+                <span class="text-xs text-gray-400">|</span>
+                <button class="text-red-500 hover:text-red-600 transition-colors duration-200">
+                  <i class="fas fa-heart text-sm"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Signed Badge -->
+          <div class="absolute top-3 right-3">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-600 text-white shadow-lg">
+              <i class="fas fa-check mr-1"></i>
+              Signed
+            </span>
+          </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <p class="text-gray-500">You haven’t signed any petitions yet.</p>
+    <!-- Empty State -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center">
+      <div class="max-w-md mx-auto">
+        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-signature text-blue-400 text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">No Signed Petitions Yet</h3>
+        <p class="text-gray-600 mb-6 text-lg">
+          You haven't signed any petitions yet. Explore available petitions and support causes that matter to you.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="{% url 'board' %}" 
+             class="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-compass"></i>
+            <span>Explore Petitions</span>
+          </a>
+          <a href="{% url 'my_petitions' %}" 
+             class="inline-flex items-center space-x-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold transition-all duration-200">
+            <i class="fas fa-plus"></i>
+            <span>Create Petition</span>
+          </a>
+        </div>
+      </div>
+    </div>
   {% endif %}
+
+  <!-- Load More Section -->
+  {% if petitions.has_next %}
+  <div class="text-center mt-12">
+    <button class="bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 hover:border-blue-700 px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
+      <i class="fas fa-redo mr-2"></i>
+      Load More Petitions
+    </button>
+  </div>
+  {% endif %}
+
 </main>
+
+<style>
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+</style>
 {% endblock %}

@@ -3,75 +3,253 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Dashboard</title>
+  <title>User Dashboard - PetitionHub</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-50 font-sans">
 
-  <div class="flex h-screen">
+  <div class="flex min-h-screen">
 
-    <!-- Sidebar (Desktop + Mobile) -->
+    <!-- Enhanced Sidebar -->
     <aside id="sidebar"
-      class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg p-5 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50">
+      class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-2xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 flex flex-col">
       
-      <h2 class="text-2xl font-bold text-blue-600 mb-6">PetitionSys</h2>
+      <!-- Logo Section -->
+      <div class="p-6 border-b border-blue-700">
+        <div class="flex items-center space-x-3">
+          <div class="relative">
+            <i class="fas fa-microphone-alt text-blue-300 text-2xl"></i>
+            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-blue-800"></div>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">PetitionHub</h2>
+            <p class="text-blue-200 text-xs mt-1">Community Platform</p>
+          </div>
+        </div>
+      </div>
       
-      <nav class="space-y-4">
+      <!-- Quick Stats -->
+      <div class="px-6 py-4 border-b border-blue-700">
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="bg-blue-700/50 rounded-lg p-2">
+            <p class="text-lg font-bold">{{ my_petitions_count|default:"0" }}</p>
+            <p class="text-blue-200 text-xs">My Petitions</p>
+          </div>
+          <div class="bg-blue-700/50 rounded-lg p-2">
+            <p class="text-lg font-bold">{{ my_signatures|default:"0" }}</p>
+            <p class="text-blue-200 text-xs">Signed</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="flex-1 p-6 space-y-1">
         <a href="{% url 'board' %}" 
-           class="block py-2 px-3 rounded hover:bg-blue-100 text-gray-700 {% if request.resolver_match.url_name == 'board' %} bg-blue-200 font-semibold {% endif %}">
-          📊 Dashboard
+           class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:translate-x-1 {% if request.resolver_match.url_name == 'board' %} bg-blue-600 shadow-lg border-r-4 border-blue-300 {% endif %}">
+          <i class="fas fa-chart-pie w-5 text-center text-blue-200"></i>
+          <span class="font-medium">Dashboard</span>
+          {% if request.resolver_match.url_name == 'board' %}
+          <i class="fas fa-chevron-right text-blue-200 ml-auto text-sm"></i>
+          {% endif %}
         </a>
         
         <a href="{% url 'my_petitions' %}" 
-           class="block py-2 px-3 rounded hover:bg-blue-100 text-gray-700 {% if request.resolver_match.url_name == 'my_petitions' %} bg-blue-200 font-semibold {% endif %}">
-          📝 My Petitions
+           class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:translate-x-1 {% if request.resolver_match.url_name == 'my_petitions' %} bg-blue-600 shadow-lg border-r-4 border-blue-300 {% endif %}">
+          <i class="fas fa-scroll w-5 text-center text-blue-200"></i>
+          <span class="font-medium">My Petitions</span>
+          {% if request.resolver_match.url_name == 'my_petitions' %}
+          <i class="fas fa-chevron-right text-blue-200 ml-auto text-sm"></i>
+          {% endif %}
         </a>
         
         <a href="{% url 'signed_petitions' %}" 
-           class="block py-2 px-3 rounded hover:bg-blue-100 text-gray-700 {% if request.resolver_match.url_name == 'signed_petitions' %} bg-blue-200 font-semibold {% endif %}">
-          ✅ Signed Petitions
+           class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:translate-x-1 {% if request.resolver_match.url_name == 'signed_petitions' %} bg-blue-600 shadow-lg border-r-4 border-blue-300 {% endif %}">
+          <i class="fas fa-signature w-5 text-center text-blue-200"></i>
+          <span class="font-medium">Signed Petitions</span>
+          {% if request.resolver_match.url_name == 'signed_petitions' %}
+          <i class="fas fa-chevron-right text-blue-200 ml-auto text-sm"></i>
+          {% endif %}
         </a>
         
         <a href="" 
-           class="block py-2 px-3 rounded hover:bg-blue-100 text-gray-700 {% if request.resolver_match.url_name == 'profile' %} bg-blue-200 font-semibold {% endif %}">
-          👤 Profile
+           class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:translate-x-1 {% if request.resolver_match.url_name == 'profile' %} bg-blue-600 shadow-lg border-r-4 border-blue-300 {% endif %}">
+          <i class="fas fa-user w-5 text-center text-blue-200"></i>
+          <span class="font-medium">Profile</span>
+          {% if request.resolver_match.url_name == 'profile' %}
+          <i class="fas fa-chevron-right text-blue-200 ml-auto text-sm"></i>
+          {% endif %}
         </a>
+
+        <!-- Additional Menu Items -->
+        <div class="pt-4 mt-4 border-t border-blue-700">
+          <a href="#" 
+             class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:translate-x-1">
+            <i class="fas fa-cog w-5 text-center text-blue-200"></i>
+            <span class="font-medium">Settings</span>
+          </a>
+          
+          <a href="#" 
+             class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:translate-x-1">
+            <i class="fas fa-question-circle w-5 text-center text-blue-200"></i>
+            <span class="font-medium">Help & Support</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- User Info & Logout -->
+      <div class="p-6 border-t border-blue-700 bg-blue-800/50">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="relative">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+              <span class="text-white font-semibold text-sm">
+                {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+              </span>
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-blue-800"></div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-white text-sm truncate">
+              {{ request.user.first_name|default:request.user.username }}
+            </p>
+            <p class="text-blue-200 text-xs truncate flex items-center">
+              <i class="fas fa-shield-alt mr-1 text-green-400"></i>
+              Verified Member
+            </p>
+          </div>
+        </div>
         
         <form method="POST" action="{% url 'logout' %}">
           {% csrf_token %}
           <button type="submit"
-                  class="w-full text-left block py-2 px-3 rounded hover:bg-red-100 text-red-600">
-            🚪 Logout
+                  class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-red-600 hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:translate-y-[-2px] group">
+            <i class="fas fa-sign-out-alt w-5 text-center group-hover:rotate-180 transition-transform duration-300"></i>
+            <span class="font-medium">Logout</span>
           </button>
         </form>
-      </nav>
+      </div>
     </aside>
 
     <!-- Overlay for mobile -->
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 md:hidden"></div>
 
-   
-      {% block content %}{% endblock %}
-    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col md:ml-64 transition-all duration-300">
+      <!-- Top Navigation -->
+      <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+        <div class="flex items-center justify-between p-4">
+          <!-- Left Section -->
+          <div class="flex items-center space-x-4">
+            <button id="menuBtn" class="md:hidden p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200">
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+            <div class="hidden md:flex items-center space-x-3">
+              <i class="fas fa-microphone-alt text-blue-600 text-2xl"></i>
+              <h1 class="text-xl font-bold text-gray-900">PetitionHub</h1>
+            </div>
+          </div>
+
+          <!-- Right Section -->
+          <div class="flex items-center space-x-4">
+            <!-- Search Bar (Desktop) -->
+            <div class="hidden md:block relative">
+              <input type="text" 
+                     placeholder="Search petitions..." 
+                     class="pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64 transition-all duration-200">
+              <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+            </div>
+
+            <!-- Notifications -->
+            <button class="relative p-2 text-gray-500 hover:text-blue-600 transition-colors duration-200 rounded-lg hover:bg-gray-100">
+              <i class="fas fa-bell text-xl"></i>
+              <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- User Menu -->
+            <div class="flex items-center space-x-3">
+              <div class="text-right hidden md:block">
+                <p class="font-semibold text-gray-800 text-sm">
+                  {{ request.user.first_name|default:request.user.username }}
+                </p>
+                <p class="text-gray-500 text-xs">Welcome back!</p>
+              </div>
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                <span class="text-white font-semibold text-sm">
+                  {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Search -->
+        <div class="md:hidden bg-white border-t border-gray-200 p-4">
+          <div class="relative">
+            <input type="text" 
+                   placeholder="Search petitions..." 
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 p-6 overflow-y-auto">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
   </div>
 
-  <!-- JS for mobile sidebar -->
+  <!-- Enhanced JavaScript -->
   <script>
     const menuBtn = document.getElementById("menuBtn");
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
 
+    // Toggle sidebar with animation
     if (menuBtn) {
       menuBtn.addEventListener("click", () => {
-        sidebar.classList.remove("-translate-x-full");
-        overlay.classList.remove("hidden");
+        sidebar.classList.toggle("-translate-x-full");
+        overlay.classList.toggle("hidden");
+        document.body.classList.toggle("overflow-hidden");
       });
     }
 
+    // Close sidebar when clicking overlay
     overlay.addEventListener("click", () => {
       sidebar.classList.add("-translate-x-full");
       overlay.classList.add("hidden");
+      document.body.classList.remove("overflow-hidden");
     });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (event) => {
+      if (window.innerWidth < 768) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnMenuBtn = menuBtn.contains(event.target);
+        
+        if (!isClickInsideSidebar && !isClickOnMenuBtn && !sidebar.classList.contains('-translate-x-full')) {
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+          document.body.classList.remove("overflow-hidden");
+        }
+      }
+    });
+
+    // Close sidebar on escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        document.body.classList.remove("overflow-hidden");
+      }
+    });
+
+    // Add smooth scroll to sidebar
+    sidebar.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      sidebar.scrollTop += e.deltaY;
+    }, { passive: false });
   </script>
 </body>
 </html>

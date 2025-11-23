@@ -6,54 +6,118 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Peptition Management{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
   <!-- Navbar -->
-  <nav class="bg-white shadow-md fixed w-full z-20 transition duration-300">
+  <nav class="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
         <!-- Logo -->
         <div class="flex items-center">
-          <a href="/" class="text-2xl font-extrabold text-blue-600 tracking-wide">Peptitions</a>
+          <a href="/" class="flex items-center space-x-2">
+            <i class="fas fa-microphone-alt text-blue-600 text-2xl"></i>
+            <span class="text-2xl font-bold text-blue-600 tracking-tight">Peptitions</span>
+          </a>
         </div>
+        
         <!-- Desktop Menu -->
-        <div class="hidden md:flex space-x-6 items-center font-medium">
-          <a href="{% url 'register' %}" class="text-gray-700 hover:text-blue-600 transition">Register</a>
-          <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 transition">Login</a>
+        <div class="hidden md:flex space-x-8 items-center font-medium">
+          <a href="{% url 'register' %}" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-semibold py-2 px-3 rounded-lg hover:bg-blue-50">
+            Register
+          </a>
+          <a href="{% url 'login' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200 shadow-md hover:shadow-lg">
+            Login
+          </a>
         </div>
+        
         <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center">
-          <button id="menu-btn" class="text-gray-700 hover:text-blue-600 focus:outline-none text-2xl">
-            ☰
+          <button id="menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none transition-colors duration-200 p-2 rounded-lg hover:bg-gray-100">
+            <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
       </div>
     </div>
+    
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pb-4 space-y-2 shadow-lg">
-      <a href="{% url 'register' %}" class="block text-gray-700 hover:text-blue-600">Register</a>
-      <a href="{% url 'login' %}" class="block text-gray-700 hover:text-blue-600">Login</a>
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 px-4 py-3 space-y-2 shadow-lg">
+      <a href="{% url 'register' %}" class="block text-gray-600 hover:text-blue-600 font-medium py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+        <i class="fas fa-user-plus mr-3"></i>Register
+      </a>
+      <a href="{% url 'login' %}" class="block text-gray-600 hover:text-blue-600 font-medium py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+        <i class="fas fa-sign-in-alt mr-3"></i>Login
+      </a>
     </div>
   </nav>
 
   <!-- Main Content -->
-  <main class="pt-20">
+  <main class="flex-1 ">
     {% block content %}{% endblock %}
   </main>
 
   <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-400 py-6 mt-10">
-    <div class="max-w-6xl mx-auto text-center">
-      <p>&copy; 2025 Peptition Management System. All rights reserved.</p>
+  <footer class="bg-gray-900 text-gray-400 py-12 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="md:col-span-2">
+          <div class="flex items-center space-x-2 mb-4">
+            <i class="fas fa-microphone-alt text-blue-500 text-xl"></i>
+            <span class="text-xl font-bold text-white">Peptitions</span>
+          </div>
+          <p class="text-gray-400 max-w-md">
+            Empowering voices to create meaningful change through community-driven petitions.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="{% url 'register' %}" class="hover:text-white transition-colors">Register</a></li>
+            <li><a href="{% url 'login' %}" class="hover:text-white transition-colors">Login</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-white font-semibold mb-4">Connect</h3>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-twitter text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-facebook text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-linkedin text-xl"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+        <p>&copy; 2025 Peptition Management System. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
   <script>
-    // Mobile menu toggle
+    // Mobile menu toggle with enhanced interaction
     document.getElementById("menu-btn").addEventListener("click", () => {
       const menu = document.getElementById("mobile-menu");
       menu.classList.toggle("hidden");
+      menu.classList.toggle("block");
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+      const menu = document.getElementById('mobile-menu');
+      const menuBtn = document.getElementById('menu-btn');
+      
+      if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+        menu.classList.add('hidden');
+        menu.classList.remove('block');
+      }
     });
   </script>
 </body>

@@ -1,37 +1,126 @@
 {% extends "peptitions/base.html" %}
 
+{% block content %}
 
-{%block content%}
-
-    <!-- Hero Section -->
-<section class="relative flex items-center justify-center py-20 bg-gradient-to-r from-blue-500 to-indigo-700 text-white">
-
-
-    <div class="absolute inset-0 bg-black bg-opacity-30"></div> <!-- overlay -->
-    <div class="relative z-10 text-center px-6">
-      <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">Raise Your Voice, <br> Create Meaningful Change</h1>
-      <p class="text-lg md:text-xl mb-8 text-gray-100 max-w-2xl mx-auto">Join our platform to create, sign, and support petitions that matter to you and your community.</p>
-      <div class="space-x-4">
-        <a href="#" class="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-gray-100 transition">Get Started</a>
-        <a href="#" class="px-6 py-3 border border-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition">Login</a>
-      </div>
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-24 lg:py-32">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                Raise Your Voice,
+                <span class="block bg-gradient-to-r from-blue-200 to-indigo-200 bg-clip-text text-transparent">
+                    Create Change
+                </span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-10 text-blue-100 max-w-4xl mx-auto leading-relaxed">
+                Join thousands of activists creating real impact. Start, sign, and share petitions that shape our community's future.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="{% url 'register' %}" 
+                   class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    Start a Petition
+                </a>
+                <a href="{% url 'login' %}" 
+                   class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300">
+                    Sign In to Support
+                </a>
+            </div>
+        </div>
     </div>
-  </section>
+    
+    <!-- Wave divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="w-full h-12">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" 
+                  opacity=".25" class="fill-current text-white"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" 
+                  opacity=".5" class="fill-current text-white"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" 
+                  class="fill-current text-gray-50"></path>
+        </svg>
+    </div>
+</section>
 
-  <!-- Features Section -->
-  <section class="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-3 gap-10">
-    <div class="bg-white p-8 rounded-xl shadow-lg text-center transform hover:-translate-y-2 hover:shadow-2xl transition">
-      <h3 class="text-2xl font-semibold mb-4 text-blue-600">📜 Create Petitions</h3>
-      <p class="text-gray-600">Draft and publish petitions on causes you care about, and invite others to support your vision.</p>
+<!-- Stats Section -->
+<section class="bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div class="p-6">
+                <div class="text-3xl font-bold text-blue-600 mb-2">10K+</div>
+                <div class="text-gray-600 font-medium">Active Petitions</div>
+            </div>
+            <div class="p-6">
+                <div class="text-3xl font-bold text-green-600 mb-2">500K+</div>
+                <div class="text-gray-600 font-medium">Signatures</div>
+            </div>
+            <div class="p-6">
+                <div class="text-3xl font-bold text-purple-600 mb-2">200+</div>
+                <div class="text-gray-600 font-medium">Victories</div>
+            </div>
+            <div class="p-6">
+                <div class="text-3xl font-bold text-orange-600 mb-2">50K+</div>
+                <div class="text-gray-600 font-medium">Active Users</div>
+            </div>
+        </div>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow-lg text-center transform hover:-translate-y-2 hover:shadow-2xl transition">
-      <h3 class="text-2xl font-semibold mb-4 text-blue-600">✍️ Sign Petitions</h3>
-      <p class="text-gray-600">Support petitions that align with your values by adding your signature and sharing them with others.</p>
+</section>
+
+<!-- Features Section -->
+<section class="bg-gray-50 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">How You Can Make a Difference</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Our platform empowers you to create change through simple, powerful tools</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-pen-fancy text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Create Petitions</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Draft and publish compelling petitions on causes you're passionate about. Our tools help you create impactful messages that resonate with supporters.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-signature text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Sign Petitions</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Support causes that matter to you. Every signature counts toward creating real change and showing decision-makers what the community wants.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-chart-line text-purple-600 text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Track Progress</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Monitor your petition's growth with real-time analytics. Watch as your movement gains momentum and approaches its goals.
+                </p>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="text-center mt-16">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-12 text-white">
+                <h3 class="text-3xl font-bold mb-4">Ready to Make Your Voice Heard?</h3>
+                <p class="text-blue-100 text-xl mb-8 max-w-2xl mx-auto">Join our community of changemakers and start creating impact today.</p>
+                <a href="{% url 'register' %}" 
+                   class="bg-white text-blue-600 hover:bg-gray-100 px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 inline-block">
+                    Get Started Now
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow-lg text-center transform hover:-translate-y-2 hover:shadow-2xl transition">
-      <h3 class="text-2xl font-semibold mb-4 text-blue-600">📊 Track Progress</h3>
-      <p class="text-gray-600">Stay updated with live stats on how many people have signed and see how movements grow.</p>
-    </div>
-  </section>
+</section>
 
 {% endblock %}

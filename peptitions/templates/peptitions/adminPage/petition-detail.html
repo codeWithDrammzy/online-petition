@@ -1,42 +1,168 @@
 {% extends "peptitions/main.html" %}
 
 {% block content %}
-<main class="flex-1 px-1">
-  <div class="bg-white shadow rounded-lg p-6">
-    <h2 class="text-2xl font-semibold mb-4">{{ petition.title }}</h2>
-    <p class="text-gray-700 mb-4">{{ petition.description }}</p>
-    <p class="text-sm text-gray-500">Created at: {{ petition.created_at|date:"M d, Y H:i" }}</p>
-    <p class="text-sm text-gray-500">Posted By: {{ petition.created_by }}</p>
+<main class="flex-1 p-6">
+  <!-- Header with Back Button -->
+  <div class="mb-6">
+    <a href="{% url 'petition-list' %}" 
+       class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 mb-4">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back to Petitions</span>
+    </a>
+    <h1 class="text-3xl font-bold text-gray-900">Petition Review</h1>
+    <p class="text-gray-600 mt-2">Review and manage petition details</p>
+  </div>
 
-    <p class="text-sm text-gray-500">Status: 
+  <!-- Petition Details Card -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">{{ petition.title }}</h2>
+          <div class="flex items-center space-x-4 mt-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+              {% if petition.status == 'pending' %}
+                bg-yellow-100 text-yellow-800 border border-yellow-200
+              {% elif petition.status == 'approved' %}
+                bg-green-100 text-green-800 border border-green-200
+              {% else %}
+                bg-red-100 text-red-800 border border-red-200
+              {% endif %}">
+              <i class="fas fa-circle text-xs mr-1"></i>
+              {{ petition.status|title }}
+            </span>
+            <span class="text-sm text-gray-600">
+              <i class="far fa-clock mr-1"></i>
+              Created {{ petition.created_at|timesince }} ago
+            </span>
+          </div>
+        </div>
+        <div class="mt-4 lg:mt-0 text-sm text-gray-600">
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-user"></i>
+            <span>Posted by: <strong>{{ petition.created_by }}</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="p-6">
+      <!-- Description -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+          <i class="fas fa-align-left mr-2 text-blue-600"></i>
+          Description
+        </h3>
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+          <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ petition.description }}</p>
+        </div>
+      </div>
+
+      <!-- Petition Metadata -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-blue-100 rounded-lg">
+              <i class="fas fa-calendar text-blue-600"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Created Date</p>
+              <p class="font-semibold text-gray-900">{{ petition.created_at|date:"M d, Y" }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-green-100 rounded-lg">
+              <i class="fas fa-clock text-green-600"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Created Time</p>
+              <p class="font-semibold text-gray-900">{{ petition.created_at|date:"H:i A" }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-purple-100 rounded-lg">
+              <i class="fas fa-signature text-purple-600"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Current Signatures</p>
+              <p class="font-semibold text-gray-900">{{ petition.current_signatures|default:"0" }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-orange-50 rounded-xl p-4 border border-orange-200">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-orange-100 rounded-lg">
+              <i class="fas fa-bullseye text-orange-600"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Target Signatures</p>
+              <p class="font-semibold text-gray-900">{{ petition.target_signatures|default:"1000" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
       {% if petition.status == "pending" %}
-        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded">Pending</span>
-      {% elif petition.status == "approved" %}
-        <span class="bg-green-100 text-green-800 px-2 py-1 text-xs rounded">Approved</span>
+      <div class="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <i class="fas fa-gavel mr-2 text-yellow-600"></i>
+          Review Actions
+        </h3>
+        <p class="text-gray-600 mb-6">This petition is awaiting your review. Please approve or reject it based on your assessment.</p>
+        
+        <form method="post" class="flex flex-col sm:flex-row gap-4">
+          {% csrf_token %}
+          <button name="action" value="approved" 
+                  onclick="return confirm('Are you sure you want to APPROVE this petition? This will make it publicly visible.');"
+                  class="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-check-circle"></i>
+            <span>Approve Petition</span>
+          </button>
+          
+          <button name="action" value="rejected" 
+                  onclick="return confirm('Are you sure you want to REJECT this petition? This action cannot be undone.');"
+                  class="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-times-circle"></i>
+            <span>Reject Petition</span>
+          </button>
+        </form>
+      </div>
+
       {% else %}
-        <span class="bg-red-100 text-red-800 px-2 py-1 text-xs rounded">Rejected</span>
+      <!-- Status Message -->
+      <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 text-center">
+        <div class="flex items-center justify-center space-x-3 text-gray-600 mb-3">
+          <i class="fas fa-info-circle text-xl"></i>
+          <span class="text-lg font-semibold">This petition has been {{ petition.status }}</span>
+        </div>
+        <p class="text-gray-500">
+          {% if petition.status == "approved" %}
+            This petition is now live and visible to all users.
+          {% else %}
+            This petition has been rejected and is not visible to users.
+          {% endif %}
+        </p>
+      </div>
       {% endif %}
-    </p>
+    </div>
 
-    {% if petition.status == "pending" %}
-    <form method="post" class="mt-6 flex gap-2">
-      {% csrf_token %}
-      <button name="action" value="approved" 
-        onclick="return confirm('Are you sure you want to approve this petition?');"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-        Approve
-      </button>
-      
-      <button name="action" value="rejected" 
-        onclick="return confirm('Are you sure you want to reject this petition?');"
-        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-        Reject
-      </button>
-    </form>
-
-    {% else %}
-    <p class="mt-6 text-gray-500 italic">This petition has already been {{ petition.status }}.</p>
-    {% endif %}
+    <!-- Footer -->
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-500">
+        <span>Petition ID: #{{ petition.id }}</span>
+        <span>Last updated: {{ petition.updated_at|date:"M d, Y H:i" }}</span>
+      </div>
+    </div>
   </div>
 </main>
 {% endblock %}
