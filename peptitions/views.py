@@ -7,6 +7,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Count, F
+
 
 # --------- Authentications / Home  -------
 def index(request):
@@ -61,9 +63,8 @@ def delete_user(request, user_id):
     messages.success(request, "User deleted successfully.")
     return redirect("user-list")
 
-# --- Dashboard View ---
-from django.db.models import Count
 
+# --- Dashboard View ---
 @login_required
 def dashboard_view(request):
     total_petitions = Petition.objects.count()
@@ -140,7 +141,7 @@ def user_list(request):
         'new_this_week': users.filter(created_at__gte=one_week_ago).count(),
         'total_petitions': Petition.objects.count(),
     }
-    return render(request, "peptitions/adminPage/user-list.html",context)
+    return render(request, "peptitions/adminPage/user-list.html", context)
 
 
 # --- User Dashboard View ---
@@ -156,7 +157,7 @@ def board_view(request):
         status="approved"
     ).exclude(id__in=signed_petitions).order_by("-created_at")
     
-    # Calculate statistics for the dashboard
+    # Calculate statistics for the dashboard AND sidebar
     total_petitions = petitions.count()
     my_signatures = Signature.objects.filter(user=request.user).count()
     my_petitions_count = Petition.objects.filter(created_by=request.user).count()
@@ -171,25 +172,48 @@ def board_view(request):
     }
     return render(request, "peptitions/userPage/board.html", context)
 
+
 # --- User Views ---
 @login_required
 def user_petitions(request):
     # ✅ Only show petitions that are approved/active
     petitions = Petition.objects.filter(status="approved").order_by("-created_at")
 
+    # Calculate statistics for the template
+    total_petitions = petitions.count()
+    total_signatures = sum(p.current_signatures for p in petitions)
+    nearly_complete = petitions.filter(current_signatures__gte=F('target_signatures') * 0.8).count()
+    urgent_petitions = petitions.filter(deadline__lte=timezone.now() + timedelta(days=3)).count() if hasattr(Petition, 'deadline') else 0
 
-    return render(request, "peptitions/userPage/petition_list.html", {"petitions": petitions})
+    # Calculate sidebar statistics for ALL user pages
+    my_signatures = Signature.objects.filter(user=request.user).count()
+    my_petitions_count = Petition.objects.filter(created_by=request.user).count()
+
+    context = {
+        "petitions": petitions,
+        "total_petitions": total_petitions,
+        "total_signatures": total_signatures,
+        "nearly_complete": nearly_complete,
+        "urgent_petitions": urgent_petitions,
+        "my_signatures": my_signatures,
+        "my_petitions_count": my_petitions_count,
+    }
+    return render(request, "peptitions/userPage/petition_list.html", context)
 
 
 @login_required
 def my_petitions(request):
     petitions = Petition.objects.filter(created_by=request.user).order_by("-created_at")
     
-    # Calculate statistics
+    # Calculate statistics for the page itself
     total_petitions = petitions.count()
     pending_petitions = petitions.filter(status='pending').count()
     approved_petitions = petitions.filter(status='approved').count()
     rejected_petitions = petitions.filter(status='rejected').count()
+    
+    # Calculate sidebar statistics
+    my_signatures = Signature.objects.filter(user=request.user).count()
+    my_petitions_count = total_petitions  # This is already calculated above
     
     if request.method == "POST":
         form = PetitionForm(request.POST, request.FILES)
@@ -209,8 +233,12 @@ def my_petitions(request):
         "pending_petitions": pending_petitions,
         "approved_petitions": approved_petitions,
         "rejected_petitions": rejected_petitions,
+        # Sidebar stats
+        "my_signatures": my_signatures,
+        "my_petitions_count": my_petitions_count,
     }
     return render(request, "peptitions/userPage/my_petitions.html", context)
+
 
 @login_required
 def sign_petition(request, petition_id):
@@ -226,7 +254,7 @@ def signed_petitions(request):
     signatures = Signature.objects.filter(user=request.user).select_related("petition").order_by('-signed_at')
     petitions = [sig.petition for sig in signatures]  # extract petitions
     
-    # Calculate statistics for the dashboard
+    # Calculate statistics for the page
     total_signed = len(petitions)
     active_petitions = len([p for p in petitions if p.status == 'approved'])
     successful_petitions = len([p for p in petitions if p.current_signatures >= p.target_signatures])
@@ -240,11 +268,18 @@ def signed_petitions(request):
         signed_at__year=current_year
     ).count()
     
+    # Calculate sidebar statistics
+    my_signatures = total_signed  # This is already calculated above
+    my_petitions_count = Petition.objects.filter(created_by=request.user).count()
+    
     context = {
         "petitions": petitions,
         "total_signed": total_signed,
         "active_petitions": active_petitions,
         "successful_petitions": successful_petitions,
         "recent_signatures": recent_signatures,
+        # Sidebar stats
+        "my_signatures": my_signatures,
+        "my_petitions_count": my_petitions_count,
     }
     return render(request, "peptitions/userPage/signed_petitions.html", context)
