@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path # type: ignore
 from . import views
 
 urlpatterns = [
@@ -7,14 +7,15 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),   # ✅ must point to your view
     path("logout/", views.logout_view, name="logout"),
 
-    path("users/<int:user_id>/delete/", views.delete_user, name="delete-user"),
+    
 
 
     # ========= Admin board =======
     path("dashboard/", views.dashboard_view, name="dashboard"),
     path('petition-list', views.petition_list, name="petition-list"),
     path('user-list', views.user_list, name="user-list"),
-    # urls.py
+    path('search/', views.search_p, name='search_p'),
+    path("users/<int:user_id>/delete/", views.delete_user, name="delete-user"),
     path("petition-detail/<int:pk>/", views.petition_detail, name="petition-detail"),
 
 

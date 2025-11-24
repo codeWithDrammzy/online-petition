@@ -1,13 +1,14 @@
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404 # type: ignore
+from django.contrib.auth import login, authenticate, logout # type: ignore
+from django.contrib.auth.decorators import login_required, user_passes_test # type: ignore
 from .forms import *
 from .models import *
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
-from django.utils import timezone
+from django.contrib.auth.forms import AuthenticationForm # type: ignore
+from django.contrib import messages # type: ignore
+from django.utils import timezone # type: ignore
 from datetime import timedelta
-from django.db.models import Count, F
+from django.db.models import Count, F # type: ignore
+from django.db.models import Q # type: ignore
 
 
 # --------- Authentications / Home  -------
@@ -120,9 +121,19 @@ def petition_detail(request, pk):
         action = request.POST.get("action")
         if action == "approved":
             petition.status = "approved"
+            petition.save()
+            messages.success(request, f'Petition "{petition.title}" has been approved.')
         elif action == "rejected":
             petition.status = "rejected"
-        petition.save()
+            petition.save()
+            messages.success(request, f'Petition "{petition.title}" has been rejected.')
+        elif action == "delete":
+            # Delete the petition
+            petition_title = petition.title
+            petition.delete()
+            messages.success(request, f'Petition "{petition_title}" has been permanently deleted.')
+            return redirect("petition-list")  # redirect to list page after deletion
+        
         return redirect("petition-list")  # redirect to list page after action
 
     context = {"petition": petition}
@@ -142,6 +153,25 @@ def user_list(request):
         'total_petitions': Petition.objects.count(),
     }
     return render(request, "peptitions/adminPage/user-list.html", context)
+
+
+@login_required
+def search_p(request):
+    query = request.GET.get('q', '')
+    petitions = Petition.objects.all()
+
+    if query:
+        petitions = Petition.objects.filter(
+            Q(title__icontains = query)|
+            Q(description__icontains=query)
+        )
+    context = {
+        'petitions': petitions,
+        'query': query,
+        'results_count': petitions.count()
+    }
+    return render(request, "peptitions/adminPage/search-p.html", context)
+
 
 
 # --- User Dashboard View ---
