@@ -51,7 +51,6 @@ def logout_view(request):
     return redirect("login")
 
 
-@login_required
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
 
@@ -278,6 +277,17 @@ def sign_petition(request, petition_id):
     petition.save()
     return redirect("user_petitions")
 
+@login_required
+def petition_info(request, pk):
+    pet = get_object_or_404(Petition, id=pk)
+    my_petitions_count = Petition.objects.filter(created_by=request.user).count()
+    
+
+    context = {
+        'petition': pet,
+        "my_petitions_count": my_petitions_count,   
+               }
+    return render(request, "peptitions/userPage/petition-info.html", context)
 
 @login_required
 def signed_petitions(request):
@@ -313,3 +323,17 @@ def signed_petitions(request):
         "my_petitions_count": my_petitions_count,
     }
     return render(request, "peptitions/userPage/signed_petitions.html", context)
+
+
+@login_required
+
+def delete_petition(request, pk):
+    petition = get_object_or_404(Petition, id=pk)
+    if request.user == petition.created_by or request.user.is_staff:
+        petition_title = petition.title
+        petition.delete()
+        messages.success(request, f'Petition "{petition_title}" has been deleted successfully.')
+    else:
+        messages.error(request, 'You do not have permission to delete this petition.')
+    
+    return redirect("my_petitions")  

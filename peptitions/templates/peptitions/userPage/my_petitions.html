@@ -229,14 +229,11 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center space-x-2">
                 {% if petition.status == "approved" %}
-                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                <a href="{% url 'petition-info' petition.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
                   <i class="fas fa-eye mr-1"></i>
                   View
                 </a>
-                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-blue-300 text-xs font-medium rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors duration-200">
-                  <i class="fas fa-share mr-1"></i>
-                  Share
-                </a>
+                
                 {% elif petition.status == "rejected" %}
                 <a href="#" 
                    onclick="return confirm('Delete this petition?');"
@@ -245,11 +242,11 @@
                   Delete
                 </a>
                 {% elif petition.status == "pending" %}
-                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
-                  <i class="fas fa-edit mr-1"></i>
-                  Edit
+                <a href="{% url 'petition-info' petition.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                  <i class="fas fa-eye mr-1"></i>
+                  View
                 </a>
-                <a href="#" 
+                <a href="{% url 'delete' petition.id%}" 
                    onclick="return confirm('Delete this petition?');"
                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors duration-200">
                   <i class="fas fa-trash mr-1"></i>

@@ -17,6 +17,7 @@ urlpatterns = [
     path('search/', views.search_p, name='search_p'),
     path("users/<int:user_id>/delete/", views.delete_user, name="delete-user"),
     path("petition-detail/<int:pk>/", views.petition_detail, name="petition-detail"),
+    path('petition-info/<int:pk>/', views.petition_info, name='petition-info'),
 
 
 
@@ -28,4 +29,6 @@ urlpatterns = [
     path("signed-petitions/", views.signed_petitions, name="signed_petitions"),
     path("sign-petition/<int:petition_id>/", views.sign_petition, name="sign_petition"),
     path("signed-petitions/", views.signed_petitions, name="signed-petitions"),
+    path("delete/<int:pk>", views.delete_petition, name="delete"),
+
 ]

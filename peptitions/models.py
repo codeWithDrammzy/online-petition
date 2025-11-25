@@ -43,11 +43,31 @@ class Petition(models.Model):
         ("active", "Active"),
         ("closed", "Closed"),
     ]
+    
+    # Add category choices
+    CATEGORY_CHOICES = [
+        ("environment", "Environment"),
+        ("human_rights", "Human Rights"),
+        ("education", "Education"),
+        ("healthcare", "Healthcare"),
+        ("animal_welfare", "Animal Welfare"),
+        ("social_justice", "Social Justice"),
+        ("technology", "Technology"),
+        ("politics", "Politics"),
+        ("economy", "Economy"),
+        ("arts_culture", "Arts & Culture"),
+        ("sports", "Sports"),
+        ("other", "Other"),
+    ]
 
     title = models.CharField(max_length=255)
     description = models.TextField()
     image = models.ImageField(upload_to="petitions/", blank=True, null=True)  
-    category = models.CharField(max_length=100, blank=True, null=True)
+    category = models.CharField(
+        max_length=100, 
+        choices=CATEGORY_CHOICES,
+        default="other"
+    )
     target_signatures = models.PositiveIntegerField(default=100)
     current_signatures = models.PositiveIntegerField(default=0)
 
